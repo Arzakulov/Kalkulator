@@ -1,0 +1,47 @@
+import java.util.Scanner;
+
+class Main {
+    public static void main(String[] args) {
+        Scanner scanner = new Scanner(System.in);
+        System.out.println("Введите выражение (например, 1 + 2):");
+        String input = scanner.nextLine();
+        
+        try {
+            String result = calc(input);
+            System.out.println(result);
+        } catch (IllegalArgumentException e) {
+            System.out.println("Ошибка: " + e.getMessage());
+        }
+    }
+    
+    public static String calc(String input) {
+        String[] parts = input.split(" ");
+        if (parts.length != 3) {
+            throw new IllegalArgumentException("Неверное количество элементов");
+        }
+        
+        int a, b;
+        try {
+            a = Integer.parseInt(parts[0]);
+            b = Integer.parseInt(parts[2]);
+        } catch (NumberFormatException e) {
+            throw new IllegalArgumentException("Неверный формат чисел");
+        }
+        
+        int result;
+        switch (parts[1]) {
+            case "+": result = a + b; break;
+            case "-": result = a - b; break;
+            case "*": result = a * b; break;
+            case "/": 
+                if (b == 0) {
+                    throw new IllegalArgumentException("Деление на ноль невозможно");
+                }
+                result = a / b;
+                break;
+            default: throw new IllegalArgumentException("Неверная операция");
+        }
+        
+        return String.valueOf(result);
+    }
+}
