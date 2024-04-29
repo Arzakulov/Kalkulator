@@ -1,29 +1,32 @@
+import java.util.Scanner;
+
 public class Calculator {
-    
+
     public static void main(String[] args) {
-        Calculator calculator = new Calculator();
-        try {
-            String result = calculator.calc(input);
-            System.out.println("Результат: " + result);
-        } catch (IllegalArgumentException e) {
-            System.out.println("Ошибка: " + e.getMessage());
-        }
+        Scanner scanner = new Scanner(System.in);
+        System.out.println("Введите выражение в формате 'число оператор число' (например, 2 + 3):");
+        String input = scanner.nextLine();
+        
+        System.out.println(calc(input));
     }
-    
-    public String calc(String input) {
-        String[] parts = input.split(" ");
+
+    public static int calc(String input) {
+        String[] tokens = input.split(" ");
         
-        if (parts.length != 3) {
-            throw new IllegalArgumentException("Некорректный формат ввода");
+        if(tokens.length != 3) {
+            throw new IllegalArgumentException("Некорректный формат ввода. Введите выражение в формате 'число оператор число'.");
         }
         
-        String operator = parts[1];
-        int num1 = convertToNumber(parts[0]);
-        int num2 = convertToNumber(parts[2]);
+        int num1 = convertToNumber(tokens[0]);
+        int num2 = convertToNumber(tokens[2]);
+        
+        if((num1 < 1 || num1 > 10) || (num2 < 1 || num2 > 10)) {
+            throw new IllegalArgumentException("Некорректные числа. Введите числа от 1 до 10 включительно.");
+        }
         
         int result;
         
-        switch (operator) {
+        switch(tokens[1]) {
             case "+":
                 result = num1 + num2;
                 break;
@@ -34,46 +37,36 @@ public class Calculator {
                 result = num1 * num2;
                 break;
             case "/":
-                if (num2 == 0) {
-                    throw new IllegalArgumentException("Деление на ноль");
-                }
                 result = num1 / num2;
                 break;
             default:
-                throw new IllegalArgumentException("Некорректная операция");
+                throw new IllegalArgumentException("Некорректный оператор. Используйте '+', '-', '*', '/'");
         }
         
-        return String.valueOf(result);
+        return result;
     }
     
-    private int convertToNumber(String input) {
+    public static int convertToNumber(String input) {
         try {
             return Integer.parseInt(input);
         } catch (NumberFormatException e) {
-            switch (input) {
-                case "I":
-                    return 1;
-                case "II":
-                    return 2;
-                case "III":
-                    return 3;
-                case "IV":
-                    return 4;
-                case "V":
-                    return 5;
-                case "VI":
-                    return 6;
-                case "VII":
-                    return 7;
-                case "VIII":
-                    return 8;
-                case "IX":
-                    return 9;
-                case "X":
-                    return 10;
-                default:
-                    throw new IllegalArgumentException("Неправильный формат числа");
-            }
+            // не удалось преобразовать как число, пробуем как римскую цифру
+            return convertRomanToNumber(input);
         }
+    }
+    
+    public static int convertRomanToNumber(String input) {
+        if (input.equals("I")) return 1;
+        if (input.equals("II")) return 2;
+        if (input.equals("III")) return 3;
+        if (input.equals("IV")) return 4;
+        if (input.equals("V")) return 5;
+        if (input.equals("VI")) return 6;
+        if (input.equals("VII")) return 7;
+        if (input.equals("VIII")) return 8;
+        if (input.equals("IX")) return 9;
+        if (input.equals("X")) return 10;
+        
+        throw new IllegalArgumentException("Некорректная римская цифра. Используйте от I до X.");
     }
 }
