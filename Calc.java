@@ -2,7 +2,6 @@ public class Calculator {
     
     public static void main(String[] args) {
         Calculator calculator = new Calculator();
-        String input = "V + III"; // Пример ввода
         try {
             String result = calculator.calc(input);
             System.out.println("Результат: " + result);
