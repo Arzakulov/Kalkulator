@@ -1,82 +1,99 @@
-import java.util.Scanner;
+import java.util.HashMap;
 
-public class Main {
-
+class Main {
     public static void main(String[] args) {
-        Scanner scanner = new Scanner(System.in);
-        System.out.println("Введите выражение в формате 'число оператор число' (например, 2 + 3):");
-        String input = scanner.nextLine();
-
-        System.out.println(calc(input));
+        System.out.println(calc("VI / III")); // Пример использования
     }
 
     public static String calc(String input) {
-        String[] tokens = input.split(" ");
+        HashMap<String, Integer> romanNumerals = new HashMap<>();
+        romanNumerals.put("I", 1);
+        romanNumerals.put("II", 2);
+        romanNumerals.put("III", 3);
+        romanNumerals.put("IV", 4);
+        romanNumerals.put("V", 5);
+        romanNumerals.put("VI", 6);
+        romanNumerals.put("VII", 7);
+        romanNumerals.put("VIII", 8);
+        romanNumerals.put("IX", 9);
+        romanNumerals.put("X", 10);
 
-        if(tokens.length != 3) {
-            throw new IllegalArgumentException("Некорректный формат ввода. Введите выражение в формате 'число оператор число'.");
+        String[] elements = input.split(" ");
+        if (elements.length != 3) {
+            throw new IllegalArgumentException("Неверный формат ввода");
         }
 
-        int num1 = convertToNumber(tokens[0]);
-        int num2 = convertToNumber(tokens[2]);
+        String first = elements[0];
+        String operator = elements[1];
+        String second = elements[2];
 
-        if((num1 < 1 || num1 > 10) || (num2 < 1 || num2 > 10)) {
-            throw new IllegalArgumentException("Некорректные числа. Введите числа от 1 до 10 включительно.");
+        if (!isValidInput(first, second, romanNumerals)) {
+            throw new IllegalArgumentException("Используются разные системы счисления");
         }
 
-        int result;
+        int a = romanNumerals.containsKey(first) ? romanNumerals.get(first) : Integer.parseInt(first);
+        int b = romanNumerals.containsKey(second) ? romanNumerals.get(second) : Integer.parseInt(second);
 
-        switch(tokens[1]) {
+        if (a < 1 || a > 10 || b < 1 || b > 10) {
+            throw new IllegalArgumentException("Числа должны быть от 1 до 10");
+        }
+
+        int result = 0;
+        switch (operator) {
             case "+":
-                result = num1 + num2;
+                result = a + b;
                 break;
             case "-":
-                result = num1 - num2;
+                result = a - b;
                 break;
             case "*":
-                result = num1 * num2;
+                result = a * b;
                 break;
             case "/":
-                result = num1 / num2;
+                result = a / b;
                 break;
             default:
-                throw new IllegalArgumentException("Некорректный оператор. Используйте '+', '-', '*', '/'");
+                throw new IllegalArgumentException("Неподдерживаемая операция");
         }
 
-        return convertToRoman(result);
-    }
-
-    public static int convertToNumber(String input) {
-        try {
-            return Integer.parseInt(input);
-        } catch (NumberFormatException e) {
-            // не удалось преобразовать как число, пробуем как римскую цифру
-            return convertRomanToNumber(input);
+        if (romanNumerals.containsKey(first)) {
+            if (result < 1) {
+                throw new IllegalArgumentException("Результат для римских чисел должен быть больше 0");
+            }
+            return toRoman(result);
+        } else {
+            return String.valueOf(result);
         }
     }
 
-    public static int convertRomanToNumber(String input) {
-        if (input.equals("I")) return 1;
-        if (input.equals("II")) return 2;
-        if (input.equals("III")) return 3;
-        if (input.equals("IV")) return 4;
-        if (input.equals("V")) return 5;
-        if (input.equals("VI")) return 6;
-        if (input.equals("VII")) return 7;
-        if (input.equals("VIII")) return 8;
-        if (input.equals("IX")) return 9;
-        if (input.equals("X")) return 10;
-
-        throw new IllegalArgumentException("Некорректная римская цифра. Используйте от I до X.");
+    private static boolean isValidInput(String first, String second, HashMap<String, Integer> romanNumerals) {
+        if (romanNumerals.containsKey(first) && !romanNumerals.containsKey(second)) {
+            return false;
+        } else if (!romanNumerals.containsKey(first) && romanNumerals.containsKey(second)) {
+            return false;
+        }
+        return true;
     }
 
-    public static String convertToRoman(int number) {
-        if (number < 1 || number > 10) {
-            throw new IllegalArgumentException("Число должно быть от 1 до 10 для конвертации в римскую систему счисления.");
+    private static String toRoman(int number) {
+        if (number < 1 || number > 3999) {
+            throw new IllegalArgumentException();
         }
 
-        String[] romanNumerals = {"I", "II", "III", "IV", "V", "VI", "VII", "VIII", "IX", "X"};
+        int[] values = {1000, 900, 500, 400, 100, 90, 50, 40, 10, 9, 5, 4, 1};
+        String[] numerals = {"M", "CM", "D", "CD", "C", "XC", "L", "XL", "X", "IX", "V", "IV", "I"};
 
-        return romanNumerals[number - 1];
+        StringBuilder sb = new StringBuilder();
+        int i = 0;
+        while (number > 0) {
+            if (number - values[i] >= 0) {
+                sb.append(numerals[i]);
+                number -= values[i];
+            } else {
+                i++;
+            }
+        }
+
+        return sb.toString();
     }
 }
